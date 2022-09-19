@@ -49,4 +49,63 @@ class Category:
   
   
 def create_spend_chart(categories):
-  return 'poop'
+  output = "Percentage spent by category\n"
+  
+  width = (len(categories)*3)+1
+  
+  total = 0
+  category_totals = {}
+  category_name_length = []
+  
+  
+  for i in range(0,len(categories)):
+    category_total = 0 
+    for transaction in categories[i].ledger:
+      if str(transaction["amount"]).find("-") != -1:
+        category_total += -transaction["amount"]
+    category_totals[i] = round(category_total,2)
+    category_name_length.append(len(categories[i].name))
+    total += round(category_total,2) 
+
+  print(total)
+  print(category_totals)
+
+  for i in range(100,-10,-10):
+    output += (str(i) + "| ").rjust(5)
+    for j in range(0,len(categories)):
+      if int(round((category_totals[j]/total)*100,-1)) >= i:
+        if j == 0:
+          output += "o".rjust(j)
+        else:  
+          output += "o".rjust(3)
+      else:
+        if j == 0:
+          output += " ".rjust(j)
+        else:  
+          output += " ".rjust(3)
+    output += "  \n"
+
+  line = "-"*width
+  output += line.rjust(width+4)+"\n"
+
+  category_name_length.sort(reverse = True)
+  max_length = category_name_length[0]
+  
+  for i in range(0,max_length):
+    for j in range(0,len(categories)):
+      if i > len(categories[j].name)-1:
+        if j == 0:
+          output += " ".rjust(6)
+        else:
+          output += " ".rjust(3)
+      else:
+        if j == 0:
+          output += categories[j].name[i].rjust(6)
+        else:
+          output += categories[j].name[i].rjust(3)
+    if i == max_length-1:
+      output += "  "
+    else:
+      output += "  \n"
+      
+  return output
